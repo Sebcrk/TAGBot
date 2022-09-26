@@ -1,27 +1,9 @@
 const puppeteer = require("puppeteer");
-const cheerio = require("cheerio");
 const credentials = require("../../credentials.json");
 
 const loadTAGWeb = async (req, res) => {
-  const { username, password, url, onTime, offTime } = credentials.TAGWeb;
-// const date = new Date().toLocaleTimeString().split(":")
-// const currentDate = `${date[0]}:${date[1]} ${date[2].split(" ")[1]}`
+  const { username, password, url } = credentials.TAGWeb;
 
-// console.log(currentDate);
-// console.log(onTime);
-// let run = false;
-
-//   if (onTime == currentDate ) {
-//     console.log("Time to log in");
-//     run = true
-//   }
-
-//   if (offTime === currentDate) {
-//     console.log("Time to log out");
-//     run = true
-//   }
-//   console.log(run);
-//   if (run) {
     console.log("\x1b[0m", "[started TAGWeb]");
 
     const browser = await puppeteer.launch({
@@ -101,6 +83,7 @@ const loadTAGWeb = async (req, res) => {
       //   (await page.click("#btnLogin", { delay: 100 }),
       //   console.log("Log In button clicked"));
 
+      /* ----------------------------------- Disconnecting session  ----------------------------------- */
       console.log("Clicking Disconnect button");
       await page.click("#divEndSession > a", { delay: 2000 });
       console.log("Disconnect button clicked");
@@ -108,12 +91,18 @@ const loadTAGWeb = async (req, res) => {
       await page.screenshot({
         path: "loggedOut.png", // Image Dimensions : 800 x 600
       });
+
+      /* ----------------------------------- Closing browser  ----------------------------------- */
+      await page.waitForSelector("#btnLoginButton");
+      console.log("Logged out. Closing browser");
+      await browser.close();
+      res.sendStatus(200)
+      console.log("Browser closed");
+
+      return
     } catch (error) {
       console.error(error.message);
     }
-//   } else {
-//     console.log("Current time does not matches triggers");
-//   }
 };
 
 module.exports = { loadTAGWeb };
