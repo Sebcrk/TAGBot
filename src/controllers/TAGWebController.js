@@ -28,12 +28,12 @@ const loadTAGWeb = async (req, res) => {
       /* ----------------------------------- Filling out username input ----------------------------------- */
       console.log("-- Entering username");
       await page.waitForSelector("#username");
-      await page.type("#username", username, { delay: 100 });
+      await page.type("#username", username );
       console.log("\x1b[0m", "Typed username");
 
       /* ----------------------------------- Filling out Password input ----------------------------------- */
       console.log("-- Entering Password");
-      await page.type("#Password", password, { delay: 100 });
+      await page.type("#Password", password );
       console.log("\x1b[0m", "Typed Password");
 
       /* ----------------------------------- Submitting credentials ----------------------------------- */
@@ -74,18 +74,18 @@ const loadTAGWeb = async (req, res) => {
       }
 
       /* ----------------------------------- Logging out  ----------------------------------- */
-      // isLoggedIn &&
-      //   (await page.click("#btnLogout", { delay: 100 }),
-      //   console.log("Log Out button clicked"));
+        isLoggedIn &&
+        (await page.click("#btnLogout", { delay: 1000 }),
+        console.log("Log Out button clicked"));
 
       /* ----------------------------------- Logging in  ----------------------------------- */
       // !isLoggedIn &&
-      //   (await page.click("#btnLogin", { delay: 100 }),
+      //   (await page.click("#btnLogin", { delay: 1000 }),
       //   console.log("Log In button clicked"));
 
       /* ----------------------------------- Disconnecting session  ----------------------------------- */
       console.log("Clicking Disconnect button");
-      await page.click("#divEndSession > a", { delay: 2000 });
+      await page.click("#divEndSession > a", { delay: 200 });
       console.log("Disconnect button clicked");
 
       await page.screenshot({
@@ -96,11 +96,13 @@ const loadTAGWeb = async (req, res) => {
       await page.waitForSelector("#btnLoginButton");
       console.log("Logged out. Closing browser");
       await browser.close();
-      res.sendStatus(200)
+    //   res.json("Bot completed the task successfully")
+
       console.log("Browser closed");
 
-      return
+      
     } catch (error) {
+    //   res.json("something bad happened")
       console.error(error.message);
     }
 };
