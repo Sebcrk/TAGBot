@@ -1,3 +1,4 @@
+const { log } = require("console");
 const puppeteer = require("puppeteer");
 const credentials = require("../../credentials.json");
 
@@ -6,7 +7,10 @@ const delay = (seconds) => new Promise(resolve => {
 })
 
 const loadTAGWeb = async (req, res) => {
-  const { username, password, url } = credentials.TAGWeb;
+  
+  const {username, password } = req.body
+
+  const { url } = credentials.TAGWeb
 
   console.log("\x1b[0m", "[started TAGWeb]");
 
@@ -131,10 +135,12 @@ const loadTAGWeb = async (req, res) => {
     //   res.json("Bot completed the task successfully")
 
     console.log("Browser closed");
+  return res.json("Process completed");
+
   } catch (error) {
       //   res.json("something bad happened")
-      console.error(error);
       console.error(error.message);
+      return res.json(error.message)
   }
 };
 
