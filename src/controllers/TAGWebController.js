@@ -5,17 +5,33 @@ const credentials = require("../../credentials.json");
 const delay = (seconds) => new Promise(resolve => {
     setTimeout(resolve, seconds*1000)
 })
-
+let username
+let password
 const loadTAGWeb = async (req, res) => {
+  const {username, password, url } = credentials.TAGWeb
+
+  // if (req.body) {
+  //   username = req.body.username
+  //   password = req.body.password
+  // } else {
+  //   username = credentials.TAGWeb.username
+  //   password = credentials.TAGWeb.password
+  // }
+
+  const shape = {
+    radius: 10,
+    diameter() {
+      return this.radius * 2;
+    },
+    perimeter: () => 2 * Math.PI * this.radius
+  };
   
-  const {username, password } = req.body
-
-  const { url } = credentials.TAGWeb
-
+  shape.diameter();
+  shape.perimeter();
+  
   console.log("\x1b[0m", "[started TAGWeb]");
 
   const browser = await puppeteer.launch({
-    headless: false,
     defaultViewport: null,
     slowMo: 10
   });
@@ -97,9 +113,6 @@ const loadTAGWeb = async (req, res) => {
 
     if ((await page.$("#btnLogout")) !== null) {
       console.log("User is logged in");
-      await page.screenshot({
-        path: "loadedContent.png", // Image Dimensions : 800 x 600
-      });
       isLoggedIn = true;
     }
 
@@ -113,12 +126,27 @@ const loadTAGWeb = async (req, res) => {
       (await page.click("#btnLogin"),
       console.log("Log In button clicked"));
 
+
+      await page.screenshot({
+        path: "buttonClicked.png", // Image Dimensions : 800 x 600
+      });
+
     /* ----------------------------------- Disconnecting session  ----------------------------------- */
-    console.log(Boolean(await page.$(".Processing")) )
+    if (Boolean(await page.$(".Processing"))) {
+      console.log("Button was clicked successfully");
+      await page.screenshot({
+        path: "loggedContent.png", // Image Dimensions : 800 x 600
+      });
+    } else {
+      console.error("There was an issue with the button click")
+      await page.screenshot({
+        path: "issueWithClick.png", // Image Dimensions : 800 x 600
+      });
+    }
 
     console.log("Waiting for Disconnect button");
     await page.waitForSelector("#divEndSession > a");
-    let delayInSeconds = 3
+    let delayInSeconds = 5
     console.log(`Button found. Clicking Disconnect button in ${delayInSeconds} seconds`);
     await delay(delayInSeconds)
     await page.click("#divEndSession > a",);
@@ -135,13 +163,14 @@ const loadTAGWeb = async (req, res) => {
     //   res.json("Bot completed the task successfully")
 
     console.log("Browser closed");
-  return res.json("Process completed");
+  // return res.json("Process completed");
 
   } catch (error) {
       //   res.json("something bad happened")
       console.error(error.message);
-      return res.json(error.message)
+      // return res.json(error.message)
   }
 };
+
 
 module.exports = { loadTAGWeb };
